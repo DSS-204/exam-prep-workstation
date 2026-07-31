@@ -1,0 +1,14 @@
+{
+  "name": "酱酱备考工作台",
+  "short_name": "酱酱备考",
+  "description": "安徽公考备考工作台 - 学习任务、作息记录、申论积累、招考公告",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#FBF6F2",
+  "theme_color": "#D8A0A8",
+  "icons": [
+    {"src":"icon-192.png","sizes":"192x192","type":"image/png","purpose":"any maskable"},
+    {"src":"icon-512.png","sizes":"512x512","type":"image/png","purpose":"any maskable"}
+  ]
+}

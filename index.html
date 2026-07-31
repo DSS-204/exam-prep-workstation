@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#D8A0A8">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="酱酱备考">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+<title>酱酱备考工作台</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- 侧边抽屉遮罩 -->
+<div id="drawerOverlay" class="drawer-overlay"></div>
+
+<!-- 侧边抽屉导航 -->
+<aside id="sideDrawer" class="side-drawer">
+  <div class="drawer-header">
+    <div class="drawer-logo">🧀</div>
+    <div class="drawer-title">酱酱备考工作台</div>
+  </div>
+  <nav class="drawer-nav" id="drawerNav">
+    <div class="drawer-section-title">📚 公考学习区</div>
+    <a class="drawer-item" data-target="card-countdown">⏰ 公考倒计时</a>
+    <a class="drawer-item" data-target="card-tasks">📝 今日学习任务</a>
+    <a class="drawer-item" data-target="card-anniversary">📅 我的备考倒数纪念日</a>
+    <a class="drawer-item" data-target="card-news">📰 每日时政新闻</a>
+    <a class="drawer-item" data-target="card-focus">⏱️ 专注计时</a>
+    <a class="drawer-item" data-target="card-knowledge">📖 错题 &amp; 素材知识库</a>
+    <a class="drawer-item" data-target="page-shenlun">💎 申论积累宝库</a>
+    <a class="drawer-item" data-target="page-announce">📢 招考公告中心</a>
+    <a class="drawer-item" data-target="card-review">🔄 周 / 月度复盘总结</a>
+    <a class="drawer-item" data-target="card-stats">📊 数据统计看板</a>
+    <div class="drawer-divider"></div>
+    <div class="drawer-section-title">🌸 生活配套区</div>
+    <a class="drawer-item" data-target="card-todo">✅ 待办备忘录清单</a>
+    <a class="drawer-item" data-target="card-schedule">😴 全天作息记录</a>
+    <a class="drawer-item" data-target="card-treehole">💖 树洞（心情记录）</a>
+    <a class="drawer-item" data-target="card-sport">🏃 每日运动规划专区</a>
+  </nav>
+  <div class="drawer-footer">💖稳步蓄力，终会上岸💖</div>
+</aside>
+
+<!-- 主页面容器 -->
+<div id="homePage" class="page active">
+
+  <!-- 卡片1:顶部通栏 -->
+  <section class="top-bar" id="card-topbar">
+    <span class="top-bar-icon">📅</span>
+    <span class="top-bar-date" id="topDate">2026年7月30日・星期四</span>
+    <span class="top-bar-menu" id="openDrawerBtn">☰</span>
+  </section>
+  <div class="home-todo-bar" id="homeTodoBar"></div>
+
+  <!-- 卡片2:每日励志标语 -->
+  <section class="card card-slogan" id="card-slogan">
+    <div class="card-head">
+      <span class="card-title">每日专属励志标语</span>
+      <button class="mini-btn" onclick="refreshSlogan()">🔄 换一句</button>
+    </div>
+    <div class="slogan-type" id="sloganType">治愈安抚</div>
+    <div class="slogan-text" id="sloganText">加载中...</div>
+  </section>
+
+  <!-- 卡片3:公考倒计时 -->
+  <section class="card card-countdown" id="card-countdown">
+    <div class="card-head"><span class="card-title">⏰ 公考倒计时</span></div>
+    <div class="countdown-fill">
+      <div class="countdown-days">
+        <span class="cd-num" id="cdDays">--</span>
+        <span class="cd-label">距离2027安徽省考笔试剩余天数</span>
+      </div>
+      <div class="cd-exam-date" id="cdExamDate">笔试日期：--</div>
+      <div class="cd-tip" id="cdTip">稳步蓄力，终会上岸</div>
+      <div class="cd-note">（日期按历年规律预估，以官方公告为准，可在招考雷达设为备考目标后自动同步）</div>
+    </div>
+  </section>
+
+  <!-- 卡片4:今日学习任务 -->
+  <section class="card card-tasks" id="card-tasks">
+    <div class="card-head">
+      <span class="card-title">📝 今日学习任务</span>
+      <button class="mini-btn" onclick="addTask()">+ 新增任务</button>
+    </div>
+    <div class="plan-time-row">
+      <label class="plan-time-label">今日计划总学习时长</label>
+      <input type="number" class="plan-time-input" id="planTotalTime" min="0" placeholder="如 8" onchange="saveData()">
+      <span class="plan-time-unit">小时</span>
+    </div>
+    <div id="taskSections"></div>
+  </section>
+
+  <!-- 卡片5:每日学习状态自评台账 -->
+  <section class="card card-selfeval" id="card-selfeval">
+    <div class="card-head"><span class="card-title">📋 每日学习状态自评台账</span></div>
+    <div class="eval-grid">
+      <div class="eval-item"><label>任务完成率</label><div class="eval-input-wrap"><input type="number" id="evalRate" min="0" max="100" placeholder="0"><span>%</span></div></div>
+      <div class="eval-item"><label>专注时长</label><div class="eval-input-wrap"><input type="number" id="evalFocus" min="0" placeholder="0"><span>min</span></div></div>
+      <div class="eval-item"><label>分心时长</label><div class="eval-input-wrap"><input type="number" id="evalDistract" min="0" placeholder="0"><span>min</span></div></div>
+      <div class="eval-item"><label>刷题总数</label><div class="eval-input-wrap"><input type="number" id="evalQuestions" min="0" placeholder="0"><span>题</span></div></div>
+      <div class="eval-item"><label>写作字数</label><div class="eval-input-wrap"><input type="number" id="evalWords" min="0" placeholder="0"><span>字</span></div></div>
+      <div class="eval-item"><label>背诵条数</label><div class="eval-input-wrap"><input type="number" id="evalRecite" min="0" placeholder="0"><span>条</span></div></div>
+    </div>
+    <div class="star-rating" id="starRating">
+      <span class="star-label">今日自评打分</span>
+      <div class="stars">
+        <span class="star" data-val="1" onclick="setStar(1)">☆</span>
+        <span class="star" data-val="2" onclick="setStar(2)">☆</span>
+        <span class="star" data-val="3" onclick="setStar(3)">☆</span>
+        <span class="star" data-val="4" onclick="setStar(4)">☆</span>
+        <span class="star" data-val="5" onclick="setStar(5)">☆</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- 卡片6:今日反省与详细情况 -->
+  <section class="card card-reflect" id="card-reflect">
+    <div class="card-head"><span class="card-title">💭 今日反省与详细情况</span></div>
+    <div class="reflect-item">
+      <label>任务详情记录</label>
+      <textarea id="reflectDetail" rows="3" placeholder="记录今日各科学习任务完成详情..." onchange="saveData()"></textarea>
+    </div>
+    <div class="reflect-item">
+      <label>自我反省</label>
+      <textarea id="reflectSelf" rows="3" placeholder="反思今日学习中的不足..." onchange="saveData()"></textarea>
+    </div>
+    <div class="reflect-item">
+      <label>次日调整方案</label>
+      <textarea id="reflectPlan" rows="3" placeholder="制定明日改进计划..." onchange="saveData()"></textarea>
+    </div>
+  </section>
+
+  <!-- 卡片7:每日运动规划专区 -->
+  <section class="card card-sport" id="card-sport">
+    <div class="card-head"><span class="card-title">🏃 每日运动规划专区</span></div>
+    <div class="sport-time-row">
+      <label>计划运动时长（上限90分钟）</label>
+      <div class="sport-input-wrap">
+        <input type="number" id="sportTime" min="0" max="90" placeholder="0" onchange="checkSportTime(this)">
+        <span>分钟</span>
+      </div>
+    </div>
+    <div class="sport-list-title">可勾选运动清单</div>
+    <div class="sport-checklist" id="sportChecklist"></div>
+    <div class="sport-remind">
+      <label>运动定时提醒时段</label>
+      <input type="time" id="sportRemind" onchange="saveData()">
+    </div>
+  </section>
+
+  <!-- 卡片8:我的待办清单 -->
+  <section class="card card-todo" id="card-todo">
+    <div class="card-head">
+      <span class="card-title">✅ 我的待办清单</span>
+      <button class="mini-btn" onclick="addTodo()">+ 添加</button>
+    </div>
+    <div class="todo-list" id="todoList"></div>
+  </section>
+
+  <!-- 卡片9:全天作息记录 -->
+  <section class="card card-schedule" id="card-schedule">
+    <div class="card-head"><span class="card-title">😴 全天作息记录</span></div>
+    <div class="schedule-grid">
+      <div class="sched-item">
+        <label>入睡时间</label>
+        <input type="time" id="sleepStart" onchange="calcNightSleep()">
+      </div>
+      <div class="sched-item">
+        <label>起床时间</label>
+        <input type="time" id="sleepEnd" onchange="calcNightSleep()">
+      </div>
+      <div class="sched-item">
+        <label>夜间睡眠时长</label>
+        <div class="dur-wrap"><input type="number" id="nightDur" min="0" placeholder="0" onchange="calcNightFromDur()"><span>小时</span></div>
+      </div>
+      <div class="sched-divider"></div>
+      <div class="sched-item">
+        <label>午睡开始</label>
+        <input type="time" id="napStart" onchange="calcNap()">
+      </div>
+      <div class="sched-item">
+        <label>午睡结束</label>
+        <input type="time" id="napEnd" onchange="calcNap()">
+      </div>
+      <div class="sched-item">
+        <label>午睡时长</label>
+        <div class="dur-wrap"><input type="number" id="napDur" min="0" placeholder="0" onchange="calcNapFromDur()"><span>小时</span></div>
+      </div>
+      <div class="sched-item">
+        <label>午睡起床状态</label>
+        <select id="napStatus" onchange="saveData()">
+          <option value="">请选择</option>
+          <option value="清醒">清醒</option>
+          <option value="迷糊">迷糊</option>
+          <option value="困倦">困倦</option>
+        </select>
+      </div>
+    </div>
+  </section>
+
+  <!-- 卡片10:树洞 -->
+  <section class="card card-treehole" id="card-treehole">
+    <div class="card-head"><span class="card-title">💖 酱酱树洞（心情记录）</span></div>
+    <div class="mood-score-row">
+      <label>今日心情指数</label>
+      <div class="mood-emoji" id="moodEmoji">
+        <span class="mood-btn" data-mood="5" onclick="setMood(5)">😊</span>
+        <span class="mood-btn" data-mood="4" onclick="setMood(4)">🙂</span>
+        <span class="mood-btn" data-mood="3" onclick="setMood(3)">😐</span>
+        <span class="mood-btn" data-mood="2" onclick="setMood(2)">😔</span>
+        <span class="mood-btn" data-mood="1" onclick="setMood(1)">😢</span>
+      </div>
+    </div>
+    <textarea id="treeholeText" rows="4" placeholder="记录今天的备考心情、情绪波动..." onchange="saveData()"></textarea>
+    <button class="mini-btn full" onclick="saveTreehole()">保存心情记录</button>
+    <div class="treehole-history-title">历史心情记录</div>
+    <div class="treehole-history" id="treeholeHistory"></div>
+    <div class="decompress" id="decompressBox" style="display:none;">
+      <div class="decompress-title">🌈 减压方案</div>
+      <div id="decompressContent"></div>
+    </div>
+  </section>
+
+  <!-- 卡片11:数据可视化统计看板 -->
+  <section class="card card-stats" id="card-stats">
+    <div class="card-head"><span class="card-title">📊 数据可视化统计看板</span></div>
+    <canvas id="statsChart" height="220"></canvas>
+    <div class="stats-legend">
+      <span class="legend-item"><i class="dot dot-blue"></i>学习时长</span>
+      <span class="legend-item"><i class="dot dot-green"></i>运动时长</span>
+      <span class="legend-item"><i class="dot dot-pink"></i>睡眠时长</span>
+    </div>
+  </section>
+
+  <!-- 卡片:每日时政新闻(安徽本土) -->
+  <section class="card card-news" id="card-news">
+    <div class="card-head"><span class="card-title">📰 每日时政新闻（安徽本土）</span></div>
+    <div class="news-list" id="newsList"></div>
+  </section>
+
+  <!-- 卡片:专注计时 -->
+  <section class="card card-focus" id="card-focus">
+    <div class="card-head"><span class="card-title">⏱️ 专注计时</span></div>
+    <div class="focus-display" id="focusDisplay">00:00:00</div>
+    <div class="focus-btns">
+      <button class="focus-btn start" onclick="startFocus()">开始专注</button>
+      <button class="focus-btn pause" onclick="pauseFocus()">暂停</button>
+      <button class="focus-btn reset" onclick="resetFocus()">重置</button>
+    </div>
+    <div class="focus-tip">连续学习满90分钟将自动提醒休息</div>
+  </section>
+
+  <!-- 卡片:周/月度复盘 -->
+  <section class="card card-review" id="card-review">
+    <div class="card-head">
+      <span class="card-title">🔄 周 / 月度复盘总结</span>
+      <button class="mini-btn" onclick="generateReview()">生成复盘</button>
+    </div>
+    <div class="review-tabs">
+      <button class="review-tab active" onclick="switchReview('week',this)">周复盘</button>
+      <button class="review-tab" onclick="switchReview('month',this)">月度复盘</button>
+    </div>
+    <div class="review-content" id="reviewContent"></div>
+  </section>
+
+  <!-- 卡片:备考倒数纪念日 -->
+  <section class="card card-anniversary" id="card-anniversary">
+    <div class="card-head">
+      <span class="card-title">📅 我的备考倒数纪念日</span>
+      <button class="mini-btn" onclick="addAnniversary()">+ 添加</button>
+    </div>
+    <div class="anni-list" id="anniList"></div>
+  </section>
+
+  <!-- 卡片:错题&素材知识库入口 -->
+  <section class="card card-knowledge" id="card-knowledge">
+    <div class="card-head"><span class="card-title">📖 错题 &amp; 素材知识库</span></div>
+    <div class="knowledge-entry" onclick="goPage('page-knowledge')">
+      <span class="ke-icon">📂</span><span class="ke-text">行测错题本 &amp; 申论素材收藏夹（全站联动）</span><span class="ke-arrow">›</span>
+    </div>
+    <div class="knowledge-entry" onclick="goPage('page-shenlun')">
+      <span class="ke-icon">💎</span><span class="ke-text">申论积累宝库（规范词/热词/金句，安徽考情）</span><span class="ke-arrow">›</span>
+    </div>
+    <div class="knowledge-entry" onclick="goPage('page-news')">
+      <span class="ke-icon">📰</span><span class="ke-text">时政资讯专区（速览/会议专题/专项刷题/背诵打卡）</span><span class="ke-arrow">›</span>
+    </div>
+    <div class="knowledge-entry" onclick="goPage('page-lixing')">
+      <span class="ke-icon">🧠</span><span class="ke-text">行测专项训练场（资料/加强削弱/图推/成语）</span><span class="ke-arrow">›</span>
+    </div>
+    <div class="knowledge-entry" onclick="goPage('page-radar')">
+      <span class="ke-icon">📡</span><span class="ke-text">招考信息雷达（公告池/意向库/考试日历/工具箱）</span><span class="ke-arrow">›</span>
+    </div>
+  </section>
+
+  <div class="bottom-spacer"></div>
+</div>
+
+<!-- 独立页面:错题&收藏夹（全模块数据联动） -->
+<div id="page-knowledge" class="page sub-page">
+  <div class="sub-page-header">
+    <button class="back-btn" onclick="goPage('homePage')">‹ 返回</button>
+    <span class="sub-page-title">📖 错题 &amp; 收藏夹</span>
+  </div>
+  <div class="sub-tabs">
+    <button class="sub-tab active" onclick="switchKTab('wrong',this)">行测错题本</button>
+    <button class="sub-tab" onclick="switchKTab('shenlunfav',this)">申论素材收藏</button>
+  </div>
+  <div class="sub-content" id="kContent"></div>
+</div>
+
+<!-- 独立页面:申论积累宝库 -->
+<div id="page-shenlun" class="page sub-page">
+  <div class="sub-page-header">
+    <button class="back-btn" onclick="goPage('homePage')">‹ 返回</button>
+    <span class="sub-page-title">💎 申论积累宝库</span>
+  </div>
+  <div class="sub-tabs">
+    <button class="sub-tab active" onclick="switchSTab('norm',this)">规范词库</button>
+    <button class="sub-tab" onclick="switchSTab('hot',this)">官方热词</button>
+    <button class="sub-tab" onclick="switchSTab('quote',this)">人民日报金句</button>
+  </div>
+  <div class="sub-content" id="sContent"></div>
+</div>
+
+<!-- 独立页面:时政资讯专区 -->
+<div id="page-news" class="page sub-page">
+  <div class="sub-page-header">
+    <button class="back-btn" onclick="goPage('homePage')">‹ 返回</button>
+    <span class="sub-page-title">📰 时政资讯专区</span>
+  </div>
+  <div class="sub-tabs">
+    <button class="sub-tab active" onclick="switchNewsTab('daily',this)">每日速览</button>
+    <button class="sub-tab" onclick="switchNewsTab('domestic',this)">国内重大</button>
+    <button class="sub-tab" onclick="switchNewsTab('intl',this)">国际热点</button>
+    <button class="sub-tab" onclick="switchNewsTab('econ',this)">经济民生</button>
+    <button class="sub-tab" onclick="switchNewsTab('tech',this)">科技文教</button>
+    <button class="sub-tab" onclick="switchNewsTab('anhui',this)">安徽时政</button>
+    <button class="sub-tab" onclick="switchNewsTab('monthly',this)">月度归档</button>
+    <button class="sub-tab" onclick="switchNewsTab('topic',this)">会议专题</button>
+    <button class="sub-tab" onclick="switchNewsTab('quiz',this)">专项刷题</button>
+    <button class="sub-tab" onclick="switchNewsTab('recite',this)">背诵打卡</button>
+  </div>
+  <div class="sub-content" id="nContent"></div>
+</div>
+
+<!-- 独立页面:行测专项训练场 -->
+<div id="page-lixing" class="page sub-page">
+  <div class="sub-page-header">
+    <button class="back-btn" onclick="goPage('homePage')">‹ 返回</button>
+    <span class="sub-page-title">🧠 行测专项训练场</span>
+  </div>
+  <div class="sub-tabs">
+    <button class="sub-tab active" onclick="switchLXTab('zhaoliao',this)">资料分析</button>
+    <button class="sub-tab" onclick="switchLXTab('jqxs',this)">加强削弱</button>
+    <button class="sub-tab" onclick="switchLXTab('tuili',this)">图形推理</button>
+    <button class="sub-tab" onclick="switchLXTab('idiom',this)">高频成语</button>
+  </div>
+  <div class="sub-content" id="lContent"></div>
+</div>
+
+<!-- 独立页面:招考信息雷达 -->
+<div id="page-radar" class="page sub-page">
+  <div class="sub-page-header">
+    <button class="back-btn" onclick="goPage('homePage')">‹ 返回</button>
+    <span class="sub-page-title">📡 招考信息雷达</span>
+  </div>
+  <div class="sub-tabs">
+    <button class="sub-tab active" onclick="switchRadarTab('pool',this)">公告汇总池</button>
+    <button class="sub-tab" onclick="switchRadarTab('fav',this)">意向收藏</button>
+    <button class="sub-tab" onclick="switchRadarTab('calendar',this)">考试日历</button>
+    <button class="sub-tab" onclick="switchRadarTab('tools',this)">报考工具</button>
+  </div>
+  <div class="sub-content" id="rContent"></div>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
