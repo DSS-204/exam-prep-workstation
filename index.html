@@ -169,28 +169,28 @@
     <div class="schedule-grid">
       <div class="sched-item">
         <label>入睡时间</label>
-        <input type="time" id="sleepStart" onchange="calcNightSleep()">
+        <input type="time" id="sleepStart" oninput="calcNightSleep()">
       </div>
       <div class="sched-item">
         <label>起床时间</label>
-        <input type="time" id="sleepEnd" onchange="calcNightSleep()">
+        <input type="time" id="sleepEnd" oninput="calcNightSleep()">
       </div>
       <div class="sched-item">
         <label>夜间睡眠时长</label>
-        <div class="dur-wrap"><input type="number" id="nightDur" min="0" placeholder="0" onchange="calcNightFromDur()"><span>小时</span></div>
+        <div class="dur-wrap"><input type="number" id="nightDur" min="0" placeholder="0" oninput="calcNightFromDur()"><span>小时</span></div>
       </div>
       <div class="sched-divider"></div>
       <div class="sched-item">
         <label>午睡开始</label>
-        <input type="time" id="napStart" onchange="calcNap()">
+        <input type="time" id="napStart" oninput="calcNap()">
       </div>
       <div class="sched-item">
         <label>午睡结束</label>
-        <input type="time" id="napEnd" onchange="calcNap()">
+        <input type="time" id="napEnd" oninput="calcNap()">
       </div>
       <div class="sched-item">
         <label>午睡时长</label>
-        <div class="dur-wrap"><input type="number" id="napDur" min="0" placeholder="0" onchange="calcNapFromDur()"><span>小时</span></div>
+        <div class="dur-wrap"><input type="number" id="napDur" min="0" placeholder="0" oninput="calcNapFromDur()"><span>小时</span></div>
       </div>
       <div class="sched-item">
         <label>午睡起床状态</label>

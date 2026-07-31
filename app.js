@@ -235,7 +235,7 @@ function renderSchedule(){
 }
 function calcNightSleep(){
   const s=state.schedule; s.sleepStart=document.getElementById('sleepStart').value; s.sleepEnd=document.getElementById('sleepEnd').value;
-  if(s.sleepStart&&s.sleepEnd){ const a=toMin(s.sleepStart),b=toMin(s.sleepEnd); if(b<a)b+=1440; s.nightDur=((b-a)/60).toFixed(1); document.getElementById('nightDur').value=s.nightDur; }
+  if(s.sleepStart&&s.sleepEnd){ let a=toMin(s.sleepStart),b=toMin(s.sleepEnd); if(b<a)b+=1440; s.nightDur=((b-a)/60).toFixed(1); document.getElementById('nightDur').value=s.nightDur; }
   DB.set('schedule',s);
 }
 function calcNightFromDur(){
@@ -245,7 +245,7 @@ function calcNightFromDur(){
 }
 function calcNap(){
   const s=state.schedule; s.napStart=document.getElementById('napStart').value; s.napEnd=document.getElementById('napEnd').value;
-  if(s.napStart&&s.napEnd){ const a=toMin(s.napStart),b=toMin(s.napEnd); if(b<a)b+=1440; s.napDur=((b-a)/60).toFixed(1); document.getElementById('napDur').value=s.napDur; }
+  if(s.napStart&&s.napEnd){ let a=toMin(s.napStart),b=toMin(s.napEnd); if(b<a)b+=1440; s.napDur=((b-a)/60).toFixed(1); document.getElementById('napDur').value=s.napDur; }
   DB.set('schedule',s);
 }
 function calcNapFromDur(){
