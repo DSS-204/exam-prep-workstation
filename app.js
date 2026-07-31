@@ -950,8 +950,76 @@ function renderShenlunFav(c){
   });
 }
 
+/* ===== 每日自动重置 ===== */
+function dailyReset(){
+  const today = new Date().toISOString().slice(0,10); // YYYY-MM-DD
+  const lastDate = DB.get('lastDate','');
+  if(lastDate === today) return; // 同一天，不重置
+
+  // 保存昨天的历史记录（用于统计看板）
+  if(lastDate){
+    const hist = DB.get('dailyHistory', []);
+    hist.unshift({
+      date: lastDate,
+      eval: DB.get('eval', {}),
+      sport: DB.get('sport', {}),
+      reflect: DB.get('reflect', {}),
+      schedule: DB.get('schedule', {})
+    });
+    if(hist.length > 90) hist.pop(); // 保留最近90天
+    DB.set('dailyHistory', hist);
+  }
+
+  // 重置每日数据
+  // 1. 学习任务：取消勾选，状态重置为"进行中"
+  const tasks = DB.get('tasks', null);
+  if(tasks){
+    tasks.forEach(sec => sec.items.forEach(item => { item.done = false; item.status = '进行中'; }));
+    DB.set('tasks', tasks);
+    state.tasks = tasks;
+  }
+
+  // 2. 自评：清空
+  const freshEval = {rate:'',focus:'',distract:'',questions:'',words:'',recite:'',star:0};
+  DB.set('eval', freshEval);
+  state.eval = freshEval;
+
+  // 3. 反思：清空
+  const freshReflect = {detail:'',self:'',plan:''};
+  DB.set('reflect', freshReflect);
+  state.reflect = freshReflect;
+
+  // 4. 运动：清空时长和勾选，保留提醒
+  const oldSport = DB.get('sport', {time:'',checklist:{},remind:''});
+  const freshSport = {time:'',checklist:{},remind:oldSport.remind||''};
+  DB.set('sport', freshSport);
+  state.sport = freshSport;
+
+  // 5. 待办：清空已完成的（未完成的保留）
+  const oldTodos = DB.get('todos', []);
+  const remainTodos = oldTodos.filter(t => !t.done);
+  DB.set('todos', remainTodos);
+  state.todos = remainTodos;
+
+  // 6. 作息：清空（新的一天重新记录）
+  const freshSchedule = {sleepStart:'',sleepEnd:'',nightDur:'',napStart:'',napEnd:'',napDur:'',napStatus:''};
+  DB.set('schedule', freshSchedule);
+  state.schedule = freshSchedule;
+
+  // 7. 树洞文字：清空（历史已保存）
+  const oldTreehole = DB.get('treehole', {mood:0,text:'',history:[]});
+  oldTreehole.text = '';
+  oldTreehole.mood = 0;
+  DB.set('treehole', oldTreehole);
+  state.treehole = oldTreehole;
+
+  // 更新日期标记
+  DB.set('lastDate', today);
+}
+
 /* ================= 初始化 ================= */
 function init(){
+  dailyReset();
   initDate(); initCountdown(); renderSlogan();
   const pt=document.getElementById('planTotalTime'); if(pt) pt.value=state.planTime;
   renderTasks(); renderEval(); renderReflect(); renderSport(); renderTodo(); renderSchedule(); renderTreehole(); renderHomeTodo();
