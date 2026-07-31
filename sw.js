@@ -1,5 +1,5 @@
 // 酱酱备考工作台 Service Worker - 离线缓存
-const CACHE = 'jj-exam-v1';
+const CACHE = 'jj-exam-v6';
 const ASSETS = [
   './',
   './index.html',
